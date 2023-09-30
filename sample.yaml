@@ -1,0 +1,4 @@
+config:
+  - request: "/"
+    workdir: "/"
+    command: "ls -lah"
