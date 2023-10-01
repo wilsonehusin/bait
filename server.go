@@ -59,9 +59,14 @@ func (s *BaitServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.Write(stdout.Bytes())
 		w.Write([]byte("\n>>> stderr\n"))
 		w.Write(stderr.Bytes())
+		w.Write([]byte("\n"))
 	}()
 
-	if err := cmd.Run(); err != nil {
+	c.Lock()
+	err := cmd.Run()
+	c.Unlock()
+
+	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
