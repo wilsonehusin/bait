@@ -17,11 +17,23 @@ type BaitConfig struct {
 	Request string `yaml:"request"`
 	Workdir string `yaml:"workdir"`
 	Command string `yaml:"command"`
+
+	lock sync.Mutex
+}
+
+func (b *BaitConfig) Lock() {
+	b.lock.Lock()
+}
+
+func (b *BaitConfig) Unlock() {
+	b.lock.Unlock()
 }
 
 func (b *BaitConfig) Cmd(ctx context.Context) *exec.Cmd {
 	words := strings.Split(b.Command, " ")
-	return exec.CommandContext(ctx, words[0], words[1:]...)
+	cmd := exec.CommandContext(ctx, words[0], words[1:]...)
+	cmd.Dir = b.Workdir
+	return cmd
 }
 
 func NewConfigFromFile(str string) (*RootConfig, error) {
